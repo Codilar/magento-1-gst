@@ -1,0 +1,37 @@
+<?php
+$_counter = 0;
+$columns = $this->getColumns();
+?>
+<tr>
+    <td class="label"><h2><?php echo $this->getLabel() ?></h2></td>
+    <td colspan="10" class="grid hours">
+        <table id="attribute-options-table" class="dynamic-grid rkstorelocator-officehours" cellspacing="0" cellpadding="0"><tbody>
+            <tr>
+                <?php foreach($columns as $column): ?>
+                    <th><?php echo $column['label'] ?></th>
+                <?php endforeach; ?>
+                <th><button id="add_new_option_button" title="Add Option" type="button" class="scalable add"><span><span><span><?php echo $this->__('Add Option') ?></span></span></span></button></th>
+            </tr>
+            <?php echo $this->getPreviousValuesHtml() ?>
+            </tbody></table>
+
+        <script type="text/javascript">//<![CDATA[
+            var Codilar_Gst = {
+                curid: 0,
+                _form_html_row: '<?php echo $this->getRowHtml() ?>',
+                init: function(){
+                    $('add_new_option_button').observe('click', function(){
+                        $('attribute-options-table').insert("<tr id='<?php echo $this->getFormElementArrayName() ?>_"+Codilar_Gst.curid+"'>"+Codilar_Gst._form_html_row+"</tr>");
+                        Codilar_Gst.curid++;
+                    });
+                },
+                deleteItem: function(elem){
+                    var toBeDeleted = elem.parentNode.parentNode;
+                    toBeDeleted.parentNode.removeChild(toBeDeleted);
+                }
+            }
+
+            Codilar_Gst.init();
+            //]]></script>
+    </td>
+</tr>

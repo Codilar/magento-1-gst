@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <sections>
+        <general>
+            <groups>
+                <gst_options translate="label" module="codilar_gst">
+                    <label>Gst</label>
+                    <frontend_type>text</frontend_type>
+                    <sort_order>1000</sort_order>
+                    <show_in_default>1</show_in_default>
+                    <show_in_website>1</show_in_website>
+                    <show_in_store>1</show_in_store>
+                    <fields>
+                        <gst_status translate="label">
+                            <label>Enable GST Extension</label>
+                            <comment>To show GST splits in site select YES</comment>
+                            <frontend_type>select</frontend_type>
+                            <sort_order>1</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                        </gst_status>
+                        <gst_id translate="label">
+                            <label>GST Id</label>
+                            <comment>GST Id for different store</comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </gst_id>
+                        <gst_state translate="label">
+                            <label>Production State</label>
+                            <comment>Production state for different store</comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </gst_state>
+                    </fields>
+                </gst_options>
+            </groups>
+        </general>
+    </sections>
+</config>

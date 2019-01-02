@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Codilar_Gst>
+            <active>true</active>
+            <codePool>community</codePool>
+            <version>1.0.3</version>
+        </Codilar_Gst>
+    </modules>
+</config>

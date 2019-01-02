@@ -1,0 +1,173 @@
+<?php
+/**
+ * Codilar Technologies Pvt. Ltd.
+ * @category    GST Module
+ * @package     GST
+ * @copyright   Copyright (c) 20170 .Codilar. (http://www.codilar.com)
+ * @purpose     [BRIEF ABOUT THE FILE]
+ * @author       Codilar Team
+ **/
+?>
+<?php
+    $_value = $this->getTotal()->getValue();
+    $_style = $this->getTotal()->getStyle();
+
+    $quote = Mage::getSingleton('checkout/session')->getQuote();
+    $storeId = Mage::app()->getStore()->getStoreId();
+
+    if ($quote->getShippingAddress()) {
+    $shippingData  = $quote->getShippingAddress()->getData();
+    $shipping_city =  $shippingData['region'];
+    }
+    $currentUrl = Mage::helper('core/url')->getCurrentUrl();
+    $production_state = Mage::getStoreConfig('general/gst_options/gst_state', $storeId);
+
+    $gst_status = Mage::getStoreConfig('general/gst_options/gst_status',$storeId);
+    
+    
+    $url = Mage::getBaseUrl()."checkout/onepage/savePayment/";
+    if (strpos(Mage::helper('core/http')->getHttpReferer(), 'checkout/onepage') !== false){
+        $flag = 1;
+    }else{
+        $flag = 2;
+    }
+
+?>
+<?php if($gst_status != 1){ ?>
+
+    <?php global $taxIter; $taxIter++; ?>
+    <?php if ($this->helper('tax')->displayFullSummary() && $_value!=0): ?>
+        <?php $isTop = 1; ?>
+        <?php foreach ($this->getTotal()->getFullInfo() as $info): ?>
+            <?php if (isset($info['hidden']) && $info['hidden']) continue; ?>
+            <?php $percent = $info['percent']; ?>
+            <?php $amount = $info['amount']; ?>
+            <?php $rates = $info['rates']; ?>
+            <?php $isFirst = 1; ?>
+
+            <?php foreach ($rates as $rate): ?>
+                <tr class="summary-details-<?php echo $taxIter; ?> summary-details<?php if ($isTop): echo ' summary-details-first'; endif; ?>" style="display:none;">
+                    <td class="a-right" style="<?php echo $_style ?>" colspan="<?php echo $this->getColspan(); ?>">
+                        <?php echo $this->escapeHtml($rate['title']); ?>
+                        <?php if (!is_null($rate['percent'])): ?>
+                            (<?php echo (float)$rate['percent']; ?>%)
+                        <?php endif; ?>
+                        <br />
+                    </td>
+                    <?php if ($isFirst): ?>
+                        <td style="<?php echo $_style ?>" class="a-right" rowspan="<?php echo count($rates); ?>">
+                            <?php echo $this->helper('checkout')->formatPrice($amount); ?>
+                        </td>
+                    <?php endif; ?>
+                </tr>
+                <?php $isFirst = 0; ?>
+                <?php $isTop = 0; ?>
+            <?php endforeach; ?>
+        <?php endforeach; ?>
+        <?php $weees = $this->getAllWeee(); ?>
+        <?php foreach ($weees as $weeeTitle => $weeeAmount): ?>
+            <tr class="summary-details-<?php echo $taxIter; ?> summary-details<?php if ($isTop): echo ' summary-details-first'; endif; ?>" style="display:none;">
+                <td class="a-right" style="<?php echo $_style ?>" colspan="<?php echo $this->getColspan(); ?>">
+                    <?php echo $this->escapeHtml($weeeTitle); ?>
+                    <br />
+                </td>
+                <td style="<?php echo $_style ?>" class="a-right" rowspan="1">
+                    <?php echo $this->helper('checkout')->formatPrice($weeeAmount); ?>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+    <?php endif;?>
+    <tr <?php if ($this->helper('tax')->displayFullSummary() && $_value!=0): ?> class="summary-total" onclick="expandDetails(this, '.summary-details-<?php echo $taxIter;?>')"<?php endif; ?>>
+        <td style="<?php echo $_style ?>" class="a-right" colspan="<?php echo $this->getColspan(); ?>">
+            <?php if ($this->helper('tax')->displayFullSummary()): ?>
+                <div class="summary-collapse"><?php echo $this->getTotal()->getTitle() ?></div>
+            <?php else: ?>
+                <?php echo $this->getTotal()->getTitle() ?>
+            <?php endif;?>
+        </td>
+        <td style="<?php echo $_style ?>" class="a-right"><?php echo $this->helper('checkout')->formatPrice($_value) ?></td>
+    </tr>
+
+
+<?php }else{ ?>
+
+    <?php global $taxIter; $taxIter++; ?>
+    <?php if ($this->helper('tax')->displayFullSummary() && $_value!=0): ?>
+    <?php $isTop = 1; ?>
+
+            <?php if($flag == 1){ ?>
+                <?php if(strcasecmp($shipping_city,$production_state) == 0 ){ ?>
+                <?php $new_amount = $_value/2; ?>
+                <tr class="summary-details-<?php echo $taxIter; ?> summary-details<?php if ($isTop): echo ' summary-details-first'; endif; ?>" style="display:none;">
+                    <td class="a-right" style="<?php echo $_style ?>" colspan="<?php echo $this->getColspan(); ?>">
+                            <?php echo $this->escapeHtml('CGST'); ?>
+                        <?php //if (!is_null($rate['percent'])): ?>
+                            <!-- (<?php //echo (float)$rate['percent']; ?>%) -->
+                        <?php //endif; ?>
+                        <br />
+                    </td>
+                    <td style="<?php echo $_style ?>" class="a-right" rowspan="<?php ?>">
+                        <?php echo $this->helper('checkout')->formatPrice($new_amount); ?>
+                    </td>
+                </tr>
+
+                <tr class="summary-details-<?php echo $taxIter; ?> summary-details<?php if ($isTop): echo ' summary-details-first'; endif; ?>" style="display:none;">
+                    <td class="a-right" style="<?php echo $_style ?>" colspan="<?php echo $this->getColspan(); ?>">
+                            <?php echo $this->escapeHtml('SGST'); ?>
+                        <?php //if (!is_null($rate['percent'])): ?>
+                            <!-- (<?php //echo (float)$rate['percent']; ?>%) -->
+                        <?php //endif; ?>
+                        <br />
+                    </td>
+                    <td style="<?php echo $_style ?>" class="a-right" rowspan="<?php ?>">
+                        <?php echo $this->helper('checkout')->formatPrice($new_amount); ?>
+                    </td>
+                </tr>
+                <?php }else{ ?>
+
+                    <tr class="summary-details-<?php echo $taxIter; ?> summary-details<?php if ($isTop): echo ' summary-details-first'; endif; ?>" style="display:none;">
+                    <td class="a-right" style="<?php echo $_style ?>" colspan="<?php echo $this->getColspan(); ?>">
+                            <?php echo $this->escapeHtml('IGST'); ?>
+                        <?php //if (!is_null($rate['percent'])): ?>
+                            <!-- (<?php //echo (float)$rate['percent']; ?>%) -->
+                        <?php //endif; ?>
+                        <br />
+                    </td>
+                        <td style="<?php echo $_style ?>" class="a-right" rowspan="<?php ?>">
+                            <?php echo $this->helper('checkout')->formatPrice($_value); ?>
+                        </td>
+                </tr>
+
+                <?php } ?>
+
+            <?php } ?>
+
+        <?php $weees = $this->getAllWeee(); ?>
+        <?php foreach ($weees as $weeeTitle => $weeeAmount): ?>
+        <tr class="summary-details-<?php echo $taxIter; ?> summary-details<?php if ($isTop): echo ' summary-details-first'; endif; ?>" style="display:none;">
+            <td class="a-right" style="<?php echo $_style ?>" colspan="<?php echo $this->getColspan(); ?>">
+                <?php echo $this->escapeHtml($weeeTitle); ?>
+                <br />
+            </td>
+            <td style="<?php echo $_style ?>" class="a-right" rowspan="1">
+                <?php echo $this->helper('checkout')->formatPrice($weeeAmount); ?>
+            </td>
+        </tr>
+        <?php endforeach; ?>
+    <?php endif;?>
+    <tr <?php if ($this->helper('tax')->displayFullSummary() && $_value!=0): ?> class="summary-total" onclick="expandDetails(this, '.summary-details-<?php echo $taxIter;?>')"<?php endif; ?>>
+        <td style="<?php echo $_style ?>" class="a-right" colspan="<?php echo $this->getColspan(); ?>">
+            <?php if($flag == 1){ ?>
+                <?php if ($this->helper('tax')->displayFullSummary()): ?>
+                    <div class="summary-collapse"><?php echo $this->escapeHtml('GST'); ?></div>
+                <?php else: ?>
+                    <?php echo $this->escapeHtml('GST'); ?>
+                <?php endif;?>
+            <?php }elseif($flag == 2){ ?>
+                <?php echo $this->escapeHtml('GST'); ?>
+            <?php } ?>
+        </td>
+        <td style="<?php echo $_style ?>" class="a-right"><?php echo $this->helper('checkout')->formatPrice($_value) ?></td>
+    </tr>
+
+<?php } ?>
